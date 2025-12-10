@@ -85,7 +85,7 @@ public class TaxRagService {
 
         // Step 2: Combine document contents into context
         String context = relevantDocs.stream()
-                .map(Document::getContent)
+                .map(Document::getFormattedContent)
                 .collect(Collectors.joining("\n\n"));
 
         System.out.println("Retrieved " + relevantDocs.size() + " relevant document chunks");
@@ -122,7 +122,7 @@ public class TaxRagService {
 
         return docs.stream()
                 .map(doc -> new DocumentInfo(
-                        doc.getContent(),
+                        doc.getFormattedContent(),
                         doc.getMetadata().get("source") != null ?
                                 doc.getMetadata().get("source").toString() : "Unknown",
                         doc.getMetadata().get("distance") != null ?
