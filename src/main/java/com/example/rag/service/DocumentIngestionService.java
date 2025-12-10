@@ -85,15 +85,7 @@ public class DocumentIngestionService {
         if (!allDocuments.isEmpty()) {
             // Store documents in vector store (this creates embeddings automatically)
             vectorStore.add(allDocuments);
-            System.out.println("Successfully ingested " + allDocuments.size() + " document chunks");
-
-            // Save to file for persistence
-            if (vectorStore instanceof org.springframework.ai.vectorstore.SimpleVectorStore simpleStore) {
-                File vectorFile = new File("./data/vector-store.json");
-                vectorFile.getParentFile().mkdirs();
-                simpleStore.save(vectorFile);
-                System.out.println("Vector store saved to: " + vectorFile.getAbsolutePath());
-            }
+            System.out.println("Successfully ingested " + allDocuments.size() + " document chunks into Chroma DB");
         }
 
         return allDocuments.size();

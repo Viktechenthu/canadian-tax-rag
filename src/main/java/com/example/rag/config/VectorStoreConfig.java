@@ -1,56 +1,49 @@
 package com.example.rag.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.ai.chroma.vectorstore.ChromaApi;
+import org.springframework.ai.chroma.vectorstore.ChromaVectorStore;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 
-import java.io.File;
-
-/**
- * Configuration for the Vector Store.
- *
- * LEARNING NOTES:
- * - VectorStore: A database that stores document embeddings (vectors)
- * - SimpleVectorStore: File-based implementation that saves to JSON
- * - EmbeddingModel: Converts text to numerical vectors using Ollama
- * - Vectors allow semantic search (finding similar meaning, not just keywords)
- */
 @Configuration
 public class VectorStoreConfig {
 
-    @Value("${vector.store.file-path}")
-    private String vectorStoreFilePath;
+    @Value("${spring.ai.vectorstore.chroma.client.host:localhost}")
+    private String chromaHost;
 
-    /**
-     * Creates a VectorStore bean that persists to a local file.
-     *
-     * How it works:
-     * 1. Takes an EmbeddingModel (auto-configured from application.properties)
-     * 2. Creates SimpleVectorStore that saves embeddings to JSON file
-     * 3. If file exists, loads previous embeddings (persistence!)
-     *
-     * @param embeddingModel The Ollama embedding model
-     * @return Configured VectorStore
-     */
+    @Value("${spring.ai.vectorstore.chroma.client.port:8000}")
+    private int chromaPort;
+
+    @Value("${spring.ai.vectorstore.chroma.collection-name:canadian_tax_documents}")
+    private String collectionName;
+
     @Bean
-    public VectorStore vectorStore(EmbeddingModel embeddingModel) {
-        SimpleVectorStore vectorStore = new SimpleVectorStore(embeddingModel);
+    public VectorStore vectorStore(EmbeddingModel embeddingModel,
+                                   RestClient.Builder restClientBuilder,
+                                   ObjectMapper objectMapper) {
 
-        File vectorStoreFile = new File(vectorStoreFilePath);
+        String baseUrl = "http://" + chromaHost + ":" + chromaPort;
 
-        // Load existing vector store if it exists
-        if (vectorStoreFile.exists()) {
-            System.out.println("Loading existing vector store from: " + vectorStoreFilePath);
-            vectorStore.load(vectorStoreFile);
-        } else {
-            System.out.println("Creating new vector store at: " + vectorStoreFilePath);
-            // Ensure parent directory exists
-            vectorStoreFile.getParentFile().mkdirs();
-        }
+        ChromaApi chromaApi = new ChromaApi(
+                baseUrl,
+                restClientBuilder,
+                objectMapper
+        );
 
-        return vectorStore;
+        // ⭐ 1.0.x requires chromaApi + embeddingModel passed into builder()
+        return ChromaVectorStore.builder(chromaApi, embeddingModel)
+                .collectionName(collectionName)
+                .initializeSchema(true)
+                .build();
+    }
+
+    @Bean
+    public RestClient.Builder restClientBuilder() {
+        return RestClient.builder();
     }
 }
