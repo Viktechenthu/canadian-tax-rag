@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CanadianTaxRagApplication {
+public class SpringAiRagApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CanadianTaxRagApplication.class, args);
+        SpringApplication.run(SpringAiRagApplication.class, args);
     }
 }

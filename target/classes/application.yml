@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: spring-ai-rag
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vectordb?reWriteBatchedInserts=true
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      connect-timeout: 60s # Connection timeout (e.g., 60 seconds)
+      read-timeout: 300s   # Read timeout (e.g., 5 minutes - generous for initial load)
+
+      chat:
+        model: llama3.2
+        options:
+          temperature: 0.7
+      embedding:
+        # Add this line explicitly:
+        base-url: http://localhost:11434
+        model: nomic-embed-text
+
+    vectorstore:
+      pgvector:
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 768
+        initialize-schema: true
+        remove-existing-vector-store-table: false
+
+  # Disable JMX to suppress the warning
+  jmx:
+    enabled: false
+
+# PDF ingestion configuration
+pdf:
+  resource:
+    location: classpath:/pdfs/
+
+server:
+  port: 8080
+
+# Logging configuration
+logging:
+  level:
+    sun.rmi: ERROR

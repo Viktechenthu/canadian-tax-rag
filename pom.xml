@@ -8,22 +8,27 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.8</version>
+        <version>3.4.12</version>
         <relativePath/>
     </parent>
 
     <groupId>com.example</groupId>
-    <artifactId>canadian-tax-rag</artifactId>
+    <artifactId>spring-ai-rag</artifactId>
     <version>1.0.0</version>
-    <name>Canadian Tax RAG</name>
+    <name>spring-ai-rag</name>
     <description>RAG system for Canadian tax documents using Spring AI</description>
 
     <properties>
         <java.version>17</java.version>
-        <spring-ai.version>1.1.2</spring-ai.version>
+        <spring-ai.version>1.0.3</spring-ai.version>
     </properties>
 
     <dependencies>
+        <!-- Spring Boot Starter WebFlux (reactive web stack required for Chroma) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-advisors-vector-store</artifactId>
@@ -38,11 +43,12 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-starter-vector-store-chroma</artifactId>
+            <artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-tika-document-reader</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
